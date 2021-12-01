@@ -13,6 +13,6 @@ This application allows you to manage tasks related to the work at home, in the 
 * Add and delete tasks
 * Mark as completed
 
-### In the future:
+### In the future
 * Sort tasks by category 
 * Check weather feature - for tasks dependent on weater (like mowing the grass or tires changing) - display notification if the weather forecast is not suitable for the planned task date
