@@ -3,18 +3,18 @@ import operator
 from itertools import groupby
 import mysql.connector
 
+
 mydb = mysql.connector.connect(
     host="localhost",
     user="",
     password="",
     database="mydatabase"
 )
-
 mycursor = mydb.cursor()
 
 
 def get_tasks_from_database():
-    sql = "SELECT id, title, taskDate, task_status FROM tasks"
+    sql = "SELECT id, title, taskDate, taskStatus FROM tasks"
     mycursor.execute(sql)
     my_tasks = mycursor.fetchall()
 
@@ -43,9 +43,9 @@ def display_tasks(tasks):
             if i['status'] == "Completed":
                 for x in i['title']:
                     completed_title = completed_title + x + '\u0336'
-                print(completed_title)
+                print("\t" + completed_title + f'(ID {i["id"]})')
             else:
-                print("\t" + i["title"])
+                print("\t" + i["title"] + f' (ID: {i["id"]})')
         print(30 * "-")
 
 
@@ -94,6 +94,7 @@ def display_menu():
 def add_new_task():
     new_task_title = ""
     new_task_date = None
+    new_task_status = ""
 
     # check if input is not empty
     while not (new_task_title and new_task_title.strip()):
@@ -158,7 +159,8 @@ def mark_as_completed(tasks):
 
     # get IDs of tasks
     for obj in tasks:
-        acceptable_ids.append(obj['id'])
+        if obj['status'] == "New":
+            acceptable_ids.append(obj['id'])
 
     # check if input is not empty, is numeric and task with the ID exist
     while not task_id.isnumeric() or len(task_id) == 0 or not within_range:
@@ -174,10 +176,10 @@ def mark_as_completed(tasks):
             if int(task_id) in acceptable_ids:
                 within_range = True
             else:
-                print("There is no task with this ID")
+                print("There is no task with this ID or it is already completed")
                 within_range = False
 
-    mycursor.execute(f"UPDATE tasks SET task_status = 'Completed' WHERE id = {task_id}")
+    mycursor.execute(f"UPDATE tasks SET taskStatus = 'Completed' WHERE id = {task_id}")
     mydb.commit()
     print(f'record with ID {task_id} marked as completed')
 
@@ -192,6 +194,8 @@ def check_weather():
 
 
 def main():
+    # clean the screen
+
     display_menu()
     main()
 
