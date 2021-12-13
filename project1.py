@@ -3,7 +3,6 @@ import operator
 from itertools import groupby
 import mysql.connector
 
-
 mydb = mysql.connector.connect(
     host="localhost",
     user="",
@@ -37,15 +36,15 @@ def display_tasks(tasks):
         print(str(key) + " " + calendar.day_name[key.weekday()])
 
         # print title of the task
-        completed_title = ""
+        new_title = ""
         for i in value:
             # if status is 'Completed' print the crossed out title, else print normally
             if i['status'] == "Completed":
-                for x in i['title']:
-                    completed_title = completed_title + x + '\u0336'
-                print("\t" + completed_title + f'(ID {i["id"]})')
+                print('\t' + '\u0336'.join(i['title'] + f' (ID: {i["id"]})') + '\u0336')
             else:
-                print("\t" + i["title"] + f' (ID: {i["id"]})')
+                # print("\t" + completed_title)
+                print("\t" + i['title'] + f' (ID: {i["id"]})')
+
         print(30 * "-")
 
 
@@ -194,8 +193,6 @@ def check_weather():
 
 
 def main():
-    # clean the screen
-
     display_menu()
     main()
 
