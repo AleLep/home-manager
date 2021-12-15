@@ -147,8 +147,54 @@ def delete_task(tasks):
     print(f'record with ID {task_id} deleted')
 
 
-def edit_task():
-    pass
+def edit_task(tasks):
+    task_id = " "
+    acceptable_ids = []
+    within_range = False
+
+    # get IDs of tasks
+    for obj in tasks:
+        if obj['status'] == "New":
+            acceptable_ids.append(obj['id'])
+
+    # check if input is not empty, is numeric and task with the ID exist
+    while not task_id.isnumeric() or len(task_id) == 0 or not within_range:
+
+        task_id = input("Enter ID of the task you want to edit:")
+
+        # numeric check
+        if not task_id.isnumeric():
+            print("Input is not a number or is empty")
+
+        # range check
+        if task_id.isnumeric():
+            if int(task_id) in acceptable_ids:
+                within_range = True
+            else:
+                print("There is no task with this ID or it is already completed")
+                within_range = False
+
+    new_task_title = ""
+    new_task_date = None
+    new_task_status = ""
+
+    # check if input is not empty
+    while not (new_task_title and new_task_title.strip()):
+
+        new_task_title = input("New task title:")
+        if new_task_title and new_task_title.strip():
+
+            new_task_date = input("New task date in format YYYY-MM-DD: ")
+
+            mycursor.execute(f"UPDATE tasks SET title = {new_task_title} WHERE id = {task_id}")
+
+            mydb.commit()
+
+        else:
+            print("You didn't enter any task!")
+
+
+
 
 
 def mark_as_completed(tasks):
