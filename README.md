@@ -10,7 +10,7 @@ This application allows you to manage tasks related to the work at home, in the 
 
 ## Features
 * Display task sorted and grouped by date
-* Add and delete tasks
+* Add, edit and delete tasks
 * Mark as completed
 
 ### In the future
