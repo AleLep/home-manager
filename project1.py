@@ -2,25 +2,27 @@ import calendar
 import operator
 from itertools import groupby
 import mysql.connector
+from datetime import datetime
+from meteostat import Point, Daily
 
 mydb = mysql.connector.connect(
     host="localhost",
-    user="",
-    password="",
+    user="root",
+    password="root",
     database="mydatabase"
 )
 mycursor = mydb.cursor()
 
 
 def get_tasks_from_database():
-    sql = "SELECT id, title, taskDate, taskStatus FROM tasks"
+    sql = "SELECT id, title, taskDate, taskStatus, weather FROM tasks"
     mycursor.execute(sql)
     my_tasks = mycursor.fetchall()
 
     tasks = []
 
-    for task_id, task_title, task_date, task_status in my_tasks:
-        task = {"id": task_id, "title": task_title, "date": task_date, "status": task_status}
+    for task_id, task_title, task_date, task_status, weather in my_tasks:
+        task = {"id": task_id, "title": task_title, "date": task_date, "status": task_status, "weather": weather}
         tasks.append(task)
 
     return tasks
@@ -46,6 +48,7 @@ def display_tasks(tasks):
                 print("\t" + i['title'] + f' (ID: {i["id"]})')
 
         print(30 * "-")
+    check_weather(tasks)
 
 
 def display_menu():
@@ -102,10 +105,11 @@ def add_new_task():
         if new_task_title and new_task_title.strip():
 
             new_task_date = input("Task date in format YYYY-MM-DD: ")
+            new_task_weather = input("Is task weather dependent? (Y/N):")
 
-            sql = "INSERT INTO tasks (title, taskDate) VALUES (%s, %s)"
+            sql = "INSERT INTO tasks (title, taskDate, weather ) VALUES (%s, %s)"
             val = [
-                (new_task_title, new_task_date)
+                (new_task_title, new_task_date, new_task_weather)
             ]
 
             mycursor.executemany(sql, val)
@@ -194,9 +198,6 @@ def edit_task(tasks):
             print("You didn't enter any task!")
 
 
-
-
-
 def mark_as_completed(tasks):
     task_id = " "
     acceptable_ids = []
@@ -234,8 +235,29 @@ def display_warning():
     pass
 
 
-def check_weather():
-    pass
+def check_weather(tasks):
+    for x in tasks:
+        task_date = x['date']
+
+        # check if date is less than 7 days since today
+        date = datetime(task_date.year, task_date.month, task_date.day)
+
+        today = datetime.date(datetime.now())
+        diff = task_date - today
+
+        if diff.days < 7:
+            # Point for Wroclaw
+            location = Point(51, 17)
+
+
+            data = Daily(location, date, date)
+            data = data.fetch()
+
+            temp = float(data['tavg'][0])
+            prcp = float(data['prcp'][0])
+
+            if temp < 10 or prcp > 0:
+                print(f"You should change tasks with ID {x['id']} date because of the weather forecast!")
 
 
 def main():
