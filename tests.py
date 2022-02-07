@@ -9,6 +9,7 @@ class TestProject(unittest.TestCase):
         task_one = [{"id": 1, "title": 'clean', "date": (datetime.strptime('2022-02-08', '%Y-%m-%d')).date(),
                      "status": 'New', "weather": 'Y'}]
         result = project1.display_warning(task_one)
+        # result calculated on the basis of the current date
         self.assertEqual(result, 1)
 
 
