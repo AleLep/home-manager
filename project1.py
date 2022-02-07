@@ -231,8 +231,18 @@ def mark_as_completed(tasks):
 
 
 # display warning if it's 7 or less days to task date
-def display_warning():
-    pass
+def display_warning(tasks):
+    for x in tasks:
+        task_date = x['date']
+        date = datetime(task_date.year, task_date.month, task_date.day)
+
+        today = datetime.date(datetime.now())
+        diff = task_date - today
+
+
+        if diff.days < 7:
+            print(f"There are {diff} days left for task {x['id']} ")
+        return(diff.days)
 
 
 def check_weather(tasks):
